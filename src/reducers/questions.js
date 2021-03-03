@@ -13,7 +13,7 @@ export default function questions(state = {}, action) {
         [action.question.id]: action.question
       }
     case SAVE_ANSWER:
-      const { qid, loginUser, answer } = action
+      const {qid, loginUser, answer} = action
       return {
         ...state,
         [qid]: {

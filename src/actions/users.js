@@ -1,5 +1,5 @@
-import { _getUsers } from '../_DATA'
 import { hideLoading, showLoading } from 'react-redux-loading'
+import { _getUsers } from '../_DATA'
 
 export const RECEIVE_USERS = 'RECEIVE_USERS'
 export const UPDATE_USER = 'UPDATE_USER'

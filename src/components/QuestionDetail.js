@@ -1,59 +1,70 @@
-import React, { Component } from 'react'
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Divider, FormControlLabel,
+  Grid, Radio,
+  RadioGroup,
+  Typography
+} from '@material-ui/core'
+import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { handleSaveAnswer } from '../actions/questions'
+import { useStyles } from '../styles'
 import PollResult from './PollResult'
 
-class QuestionDetail extends Component {
-  state = {
-    answer: 'optionOne',
-    isSubmit: false,
-  }
+const QuestionDetail = (props) => {
+  const classes = useStyles()
+  const [answer, setAnswer] = useState('optionOne')
+  const [isSubmit, setIsSubmit] = useState(false)
 
-  answerQuestion = (e) => {
+  const answerQuestion = (e) => {
     e.preventDefault()
-    const {loginUser, question, dispatch} = this.props
-    const {answer} = this.state
+    const {loginUser, question, dispatch} = props
     dispatch(handleSaveAnswer(loginUser, question.id, answer))
-    this.setState(() => ({
-      isSubmit: true
-    }))
+    setIsSubmit(true)
   }
 
-  onAnswerChange = (e) => {
-    this.setState(() => ({
-      answer: e.target.value
-    }))
+  const onAnswerChange = (e) => {
+    setAnswer(e.target.value)
   }
 
-  render() {
-    const {question, author, isAnswered, id} = this.props
-    const {isSubmit} = this.state
-    if (isAnswered || isSubmit) {
-      return (
-        <PollResult id={id}/>
-      )
-    }
-    const {answer} = this.state
-    return (
-      <div>
-        {question !== undefined && <form onSubmit={this.answerQuestion}>
-          {author} asks:
-          Would you rather ...
-          <div>
-            <input type="radio" value="optionOne" name="answer"
-                   checked={answer === 'optionOne'}
-                   onChange={this.onAnswerChange}/>
-            {question.optionOne.text}
-            <input type="radio" value="optionTwo" name="answer"
-                   checked={answer === 'optionTwo'}
-                   onChange={this.onAnswerChange}/>
-            {question.optionTwo.text}
-          </div>
-          <button type={'submit'}>Submit</button>
-        </form>}
-      </div>
-    )
-  }
+  const {question, author, isAnswered, id, avatarURL} = props
+
+  return (isAnswered || isSubmit) ? <PollResult id={id}/> : (
+    <Box width='50%'>
+      <Card>
+        <CardHeader className={classes.blue} title={`${author} asks`}/>
+        <CardContent>
+          <Grid container spacing={3}>
+            <Grid item xs={2}>
+              <Box display='flex' justifyContent='center'>
+                <Avatar alt={author} src={process.env.PUBLIC_URL + avatarURL} className={classes.large}/>
+              </Box>
+            </Grid>
+            <Grid item xs={1}>
+              <Divider orientation='vertical'/>
+            </Grid>
+            <Grid item xs={9}>
+              <Typography variant='h5' gutterBottom>
+                Would you rater ...
+              </Typography>
+              <RadioGroup aria-label='answer' name='answer' value={answer} onChange={onAnswerChange}>
+                <FormControlLabel value='optionOne' control={<Radio />} label={question.optionOne.text} />
+                <FormControlLabel value='optionTwo' control={<Radio />} label={question.optionTwo.text} />
+              </RadioGroup>
+              <Button variant='outlined' color='primary' onClick={answerQuestion} fullWidth>
+                SUBMIT
+              </Button>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+    </Box>
+  )
 }
 
 function mapStateToProps({loginUser, questions, users}, props) {
@@ -65,6 +76,7 @@ function mapStateToProps({loginUser, questions, users}, props) {
     loginUser,
     question,
     author: users[question.author].name,
+    avatarURL: users[question.author].avatarURL,
     isAnswered,
     id,
   }

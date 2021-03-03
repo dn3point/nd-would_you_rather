@@ -1,5 +1,5 @@
+import { hideLoading, showLoading } from 'react-redux-loading'
 import { _getQuestions, _saveQuestion, _saveQuestionAnswer } from '../_DATA'
-import { showLoading, hideLoading } from 'react-redux-loading'
 import { updateUser } from './users'
 
 export const RECEIVE_QUESTIONS = 'RECEIVE_QUESTIONS'
@@ -31,7 +31,7 @@ function saveAnswer(loginUser, qid, answer) {
 
 export function handleAddQuestion(optionOneText, optionTwoText) {
   return (dispatch, getState) => {
-    const { loginUser } = getState()
+    const {loginUser} = getState()
     dispatch(showLoading())
     return _saveQuestion({
       author: loginUser,

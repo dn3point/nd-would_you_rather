@@ -1,40 +1,85 @@
-import React, { Component } from 'react'
+import { AppBar, Box, Grid, Paper, Tab, Tabs } from '@material-ui/core'
+import * as PropTypes from 'prop-types'
+import React, { useState } from 'react'
 import { connect } from 'react-redux'
-import { handleGetQuestions } from '../actions/questions'
 import QuestionCard from './QuestionCard'
 
-class Home extends Component {
-  componentDidMount() {
-    this.props.dispatch(handleGetQuestions())
+function TabPanel(props) {
+  const {children, value, index, ...other} = props
+
+  return (
+    <div
+      role='tabpanel'
+      hidden={value !== index}
+      id={`question-tab-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box p={3}>
+          {children}
+        </Box>
+      )}
+    </div>
+  )
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired,
+}
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  }
+}
+
+const Home = (props) => {
+  const [value, setValue] = useState(0)
+
+  const {answered, unanswered} = props
+
+  const handleChange = (e, newValue) => {
+    setValue(newValue)
   }
 
-  render() {
-    return (
-      <div>
-        Unanswered Questions
-        <ul>
-          {
-            this.props.unanswered.map((question) => (
-              <li key={question.id}>
-                <QuestionCard key={question.id} id={question.id}/>
-              </li>
-            ))
-          }
-        </ul>
-        Answered Questions
-        <ul>
-          {
-            this.props.answered.map((question) => (
-              <li key={question.id}>
-                <QuestionCard key={question.id} id={question.id}/>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-    )
-
-  }
+  return (
+    <Box width='50%'>
+      <AppBar position='static'>
+        <Tabs value={value} onChange={handleChange} aria-label='question tab' variant='fullWidth'>
+          <Tab label='Unanswered' {...a11yProps(0)} />
+          <Tab label='Answered' {...a11yProps(1)} />
+        </Tabs>
+      </AppBar>
+      <Paper variant='outlined' square>
+        <TabPanel value={value} index={0}>
+          <Grid container spacing={3}>
+            {
+              unanswered.map((question) => (
+                <Grid item xs={12} key={question.id}>
+                  <QuestionCard key={question.id} id={question.id}/>
+                </Grid>
+              ))
+            }
+          </Grid>
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <Grid container spacing={3}>
+            {
+              answered.map((question) => (
+                <Grid item xs={12} key={question.id}>
+                  <QuestionCard key={question.id} id={question.id}/>
+                </Grid>
+              ))
+            }
+          </Grid>
+        </TabPanel>
+      </Paper>
+    </Box>
+  )
 }
 
 function mapStateToProps({loginUser, questions, users}) {

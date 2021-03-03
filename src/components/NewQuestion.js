@@ -1,62 +1,64 @@
-import React, { Component } from 'react'
+import { Box, Button, Card, CardActions, CardContent, CardHeader, TextField, Typography } from '@material-ui/core'
+import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 import { handleAddQuestion } from '../actions/questions'
+import { useStyles } from '../styles'
 
-class NewQuestion extends Component {
-  state = {
-    optionOne: '',
-    optionTwo: '',
-    toHome: false,
-  }
+const NewQuestion = (props) => {
+  const classes = useStyles()
+  const [optionOne, setOptionOne] = useState('')
+  const [optionTwo, setOptionTwo] = useState('')
+  const [toHome, setToHome] = useState(false)
 
-  createNewQuestion = (e) => {
+  const createNewQuestion = (e) => {
     e.preventDefault()
 
-    const {optionOne, optionTwo} = this.state
+    props.dispatch(handleAddQuestion(optionOne, optionTwo))
 
-    this.props.dispatch(handleAddQuestion(optionOne, optionTwo))
-
-    this.setState(() => ({
-      optionOne: '',
-      optionTwo: '',
-      toHome: true,
-    }))
+    setOptionOne('')
+    setOptionTwo('')
+    setToHome(true)
   }
 
-  handleOptionOneChange = (e) => {
+  const handleOptionOneChange = (e) => {
     const value = e.target.value
-    this.setState(() => ({
-      optionOne: value,
-    }))
+    setOptionOne(value)
   }
 
-  handleOptionTwoChange = (e) => {
+  const handleOptionTwoChange = (e) => {
     const value = e.target.value
-    this.setState(() => ({
-      optionTwo: value,
-    }))
+    setOptionTwo(value)
   }
 
-  render() {
-    const {optionOne, optionTwo, toHome} = this.state
-    if (toHome) {
-      return <Redirect to='/'/>
-    }
-    return (
-      <div>
-        <h3>Create New Questions</h3>
-        Complete the question:
-        <h4>Would you rather ...</h4>
-        <input id={'optionOne'} value={optionOne} onChange={this.handleOptionOneChange}/>
-        OR
-        <input id={'optionTwo'} value={optionTwo} onChange={this.handleOptionTwoChange}/>
-        <button onClick={this.createNewQuestion}
-                disabled={optionOne.length === 0 || optionTwo.length === 0}>Submit
-        </button>
-      </div>
-    )
-  }
+  return toHome ? <Redirect to='/'/> : (
+    <Box width='50%'>
+      <Card>
+        <CardHeader className={classes.blue} title='Create New Questions'/>
+        <CardContent>
+          <Typography variant='subtitle1' gutterBottom>
+            Complete the question:
+          </Typography>
+          <Typography variant='h6' gutterBottom>
+            Would you rather ...
+          </Typography>
+          <TextField id='option-one' label='Option one' variant='outlined' fullWidth
+                     onChange={handleOptionOneChange} value={optionOne}/>
+          <Typography variant='h6' gutterBottom align='center'>
+            OR
+          </Typography>
+          <TextField id='option-two' label='Option two' variant='outlined' fullWidth
+                     onChange={handleOptionTwoChange} value={optionTwo}/>
+        </CardContent>
+        <CardActions>
+          <Button variant='outlined' color='primary' onClick={createNewQuestion} fullWidth
+                  disabled={optionOne.length === 0 || optionTwo.length === 0}>
+            SUBMIT
+          </Button>
+        </CardActions>
+      </Card>
+    </Box>
+  )
 }
 
 export default connect()(NewQuestion)
