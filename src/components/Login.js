@@ -1,14 +1,4 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Menu,
-  MenuItem,
-  Typography
-} from '@material-ui/core'
+import { Avatar, Box, Button, Card, CardContent, CardHeader, Menu, MenuItem, Typography } from '@material-ui/core'
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
@@ -25,7 +15,6 @@ const Login = (props) => {
     const userId = e.target.innerText
     props.dispatch(handleLogin(userId))
     props.dispatch(handleGetQuestions())
-    props.history.push('/')
   }
 
   const handleClick = (e) => {

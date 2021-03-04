@@ -5,8 +5,10 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Divider, FormControlLabel,
-  Grid, Radio,
+  Divider,
+  FormControlLabel,
+  Grid,
+  Radio,
   RadioGroup,
   Typography
 } from '@material-ui/core'
@@ -14,6 +16,7 @@ import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { handleSaveAnswer } from '../actions/questions'
 import { useStyles } from '../styles'
+import NotFound from './NotFound'
 import PollResult from './PollResult'
 
 const QuestionDetail = (props) => {
@@ -34,7 +37,14 @@ const QuestionDetail = (props) => {
 
   const {question, author, isAnswered, id, avatarURL} = props
 
-  return (isAnswered || isSubmit) ? <PollResult id={id}/> : (
+  if (!question) {
+    return (
+      <NotFound text={'This question is not exist!'} title={'ERROR'}/>
+    )
+  }
+  if (isAnswered || isSubmit)
+    return <PollResult id={id}/>
+  return (
     <Box width='50%'>
       <Card>
         <CardHeader className={classes.blue} title={`${author} asks`}/>
@@ -53,8 +63,8 @@ const QuestionDetail = (props) => {
                 Would you rater ...
               </Typography>
               <RadioGroup aria-label='answer' name='answer' value={answer} onChange={onAnswerChange}>
-                <FormControlLabel value='optionOne' control={<Radio />} label={question.optionOne.text} />
-                <FormControlLabel value='optionTwo' control={<Radio />} label={question.optionTwo.text} />
+                <FormControlLabel value='optionOne' control={<Radio/>} label={question.optionOne.text}/>
+                <FormControlLabel value='optionTwo' control={<Radio/>} label={question.optionTwo.text}/>
               </RadioGroup>
               <Button variant='outlined' color='primary' onClick={answerQuestion} fullWidth>
                 SUBMIT
@@ -75,8 +85,8 @@ function mapStateToProps({loginUser, questions, users}, props) {
   return {
     loginUser,
     question,
-    author: users[question.author].name,
-    avatarURL: users[question.author].avatarURL,
+    author: question ? users[question.author].name : '',
+    avatarURL: question ? users[question.author].avatarURL : '',
     isAnswered,
     id,
   }
